@@ -1,5 +1,10 @@
 # Created by https://www.gitignore.io/api/c,assembler
 
+#Image Files
+*.qcow2
+*.img
+*.vmdk
+
 ### Assembler ###
 *.[sS]
 *.bc
@@ -14,6 +19,7 @@
 *.obj
 *.elf
 *.bin
+*.sys
 
 # Linker output
 *.ilk
