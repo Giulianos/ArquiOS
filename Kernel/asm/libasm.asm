@@ -1,7 +1,8 @@
-GLOBAL cpuVendor
+global cpuVendor
+global sti
 
 section .text
-	
+
 cpuVendor:
 	push rbp
 	mov rbp, rsp
@@ -24,4 +25,8 @@ cpuVendor:
 
 	mov rsp, rbp
 	pop rbp
+	ret
+
+sti:
+	sti
 	ret
