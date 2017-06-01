@@ -6,6 +6,10 @@ void keyboardHandlerC()
 {
   inputB(0x60);
   ncPrint("Keyboard Interrupt Handled!");
-  outputB(0x20, 0x20);
-  return;
+}
+
+void mouseHandlerC()
+{
+  inputB(0x60); //Si no leo datos el mouse no sigue interrumpiendo
+  ncPrint("Mouse Interrupt Handled!");
 }
