@@ -1,5 +1,6 @@
 global keyboardHandler
 extern keyboardHandlerC
+extern keyboardHandlerEnd
 
 %include "./asm/macros.m"
 

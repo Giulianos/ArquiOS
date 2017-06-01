@@ -4,4 +4,6 @@
 
   void outputB(uint16_t reg, uint8_t data);
   uint8_t inputB(uint16_t reg);
+  void writePICMask(uint16_t mask);
+
 #endif
