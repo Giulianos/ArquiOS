@@ -34,17 +34,3 @@
 	pop rbx
 	pop rax
 %endmacro
-
-%macro irqHandler 1
-	pushaq
-
-	mov rdi, %1
-	call irqDispatcher
-
-	mov al, 20h ; EOI
-	out 20h, al
-
-	popaq
-
-	iretq
-%endmacro

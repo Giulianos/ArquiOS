@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <interrupts.h>
 #include <hardwareCom.h>
+#include <handlers.h>
 #include <lib.h>
 
 static IDTEntry_t* IDT = (IDTEntry_t*)0x0;
@@ -18,8 +19,7 @@ void setIDTEntry(uint16_t entry, uint64_t offset)
 
 void configureInterrupts()
 {
-  writePICMask(0xEFF8); //Habilito solo las interrupciones de teclado, timer tick y mouse.
-  //setHandler(0x2c, (uint64_t)mouseHandler);
-  //initMouse(); //Inicializo el mouse
+  writePICMask(0xFFFD); //Habilito solo las interrupciones de teclado
+  setIDTEntry(0x21, (uint64_t)keyboardHandler);
   sti();//Habilito las interrupciones
 }
