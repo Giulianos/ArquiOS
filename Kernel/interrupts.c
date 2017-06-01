@@ -3,6 +3,7 @@
 #include <hardwareCom.h>
 #include <handlers.h>
 #include <lib.h>
+#include "MouseDriver/driver.h"
 
 static IDTEntry_t* IDT = (IDTEntry_t*)0x0;
 
@@ -19,7 +20,9 @@ void setIDTEntry(uint16_t entry, uint64_t offset)
 
 void configureInterrupts()
 {
-  writePICMask(0xFFFD); //Habilito solo las interrupciones de teclado
-  setIDTEntry(0x21, (uint64_t)keyboardHandler);
+  writePICMask(0xEFF9); //Habilito solo las interrupciones de teclado y mouse
+  setIDTEntry(0x21, (uint64_t)keyboardHandler); //Handler de la interrupcion de teclado
+  setIDTEntry(0x2C, (uint64_t)mouseHandler); //Handler de la interrupcion de mouse
+  initMouse();
   sti();//Habilito las interrupciones
 }
