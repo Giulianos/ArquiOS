@@ -9,6 +9,9 @@ void keyboardHandlerC()
 
 void mouseHandlerC()
 {
-  inputB(0x60); //Si no leo datos el mouse no sigue interrumpiendo
-  ncPrint("Mouse Interrupt Handled!");
+  ncPrint("MouseHandlerStart!");
+  ncNewline();
+  mouseDriver();
+  ncPrint("MouseHandlerEnd!");
+  ncNewline();
 }

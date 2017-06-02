@@ -4,5 +4,6 @@
   #include <stdint.h>
 
   void initMouse();
+  void mouseDriver();
 
 #endif

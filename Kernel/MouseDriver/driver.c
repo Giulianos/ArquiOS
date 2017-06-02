@@ -8,13 +8,16 @@ tomando informacion de:
 
 #include <hardwareCom.h>
 #include "driver.h"
+#include <naiveConsole.h>
 
 #define MOUSE_WAIT_READ   0x00
 #define MOUSE_WAIT_WRITE  0x01
 #define MOUSE_WAIT_TIMEOUT 10000 //Cantidad de iteraciones antes de abortar espera
 
-static uint16_t mousePositionX = 0;
-static uint16_t mousePositionY = 0;
+static int mousePositionX = 0;
+static int mousePositionY = 0;
+
+static uint8_t didOccurFirsrInterrupt = 0;
 
 static void mouseWait(uint8_t bit);
 static uint8_t mouseRead();
@@ -25,10 +28,75 @@ static void mouseWrite(uint8_t data);
 void mouseDriver()
 {
 
+  if(!didOccurFirsrInterrupt)
+  {
+    didOccurFirsrInterrupt=1;
+    return;
+  }
+
+  static uint8_t phase = 0;
+  static uint8_t flags;
+  static int movX=0;
+  static int movY=0;
+
+  switch(phase)
+  {
+    case 0: flags=inputB(0x60);
+            phase++;
+            break;
+    case 1: movX=inputB(0x60);
+            if(flags&0x10)
+              movX |= 0xFFFFFF00;
+            phase++;
+            break;
+    case 2: movY=inputB(0x60);
+            phase=0;if((flags&0x80) || (flags&0x40))
+              return; //Descarto este paquete que solo tiene info de overflow (inservible)
+            if(flags&0x20)
+              movY |= 0xFFFFFF00;
+            mousePositionX+=movX;
+            mousePositionY+=movY;
+            ncClear();
+            ncPrintBin(flags);
+            ncPrintChar(';');
+            ncPrintSignedDec(movX);
+            ncPrintChar(';');
+            ncPrintSignedDec(movY);
+            ncNewline();
+            break;
+  }
+
+  /*
+  if(phase == 0)
+  {
+    flags=inputB(0x60);
+    phase++;
+    return;
+  } else if(phase == 1)
+  {
+    movX=inputB(0x60);
+    phase++;
+    mousePositionX += movX*(flags&0x10)?(-1):1;
+    return;
+  } else if(phase == 3)
+  {
+    movY=inputB(0x60);
+    phase++;
+    mousePositionY += movY*(flags&0x20)?(-1):1;
+    return;
+    ncClear();
+    ncPrintDec(mousePositionX);
+    ncPrintChar(';');
+    ncPrintDec(mousePositionY);
+    ncNewline();
+    phase=0;
+  }*/
 }
 
 void initMouse()
 {
+  ncPrint("Initializing MouseDriver!");
+  ncNewline();
   //Habilito aux mouse dev. (opcional, pero mejor tenerlo)
   mouseWait(MOUSE_WAIT_WRITE); //Espero a poder escribir
   outputB(0x64, 0xA8);
@@ -49,7 +117,16 @@ void initMouse()
 
   /* Activo el envio automatico de paquetes */
   mouseWrite(0xF4);
-  mouseRead();  //Espero el ACK
+  mouseRead(); //Espero ACK
+
+  /* Leo y mustro el MouseID (debugging) */
+  mouseWrite(0xF2);
+  mouseRead(); //Espero el ACK
+  uint8_t mouseID= mouseRead(); //Leo el mouseID
+  ncPrintHex(mouseID);
+
+  ncPrint("End of Initialization!");
+  ncNewline();
 
 }
 
