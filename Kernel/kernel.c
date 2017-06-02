@@ -84,7 +84,7 @@ void * initializeKernelBinary()
 int main()
 {
 	configureInterrupts();
-	ncPrint("[Kernel Main]");
+	/*ncPrint("[Kernel Main]");
 	ncNewline();
 	ncPrint("  Sample code module at 0x");
 	ncPrintHex((uint64_t)sampleCodeModuleAddress);
@@ -102,7 +102,8 @@ int main()
 	ncNewline();
 
 	ncPrint("[Finished]");
-
+*/
+	ncClear();
 	while(1){}
 
 	return 0;

@@ -1,11 +1,10 @@
 #include <handlers.h>
 #include <hardwareCom.h>
 #include <naiveConsole.h>
-
+#include "KeyboardDriver/driver.h"
 void keyboardHandlerC()
 {
-  inputB(0x60);
-  ncPrint("Keyboard Interrupt Handled!");
+  keyboardDriver();
 }
 
 void mouseHandlerC()
