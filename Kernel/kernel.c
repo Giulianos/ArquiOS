@@ -83,6 +83,7 @@ void * initializeKernelBinary()
 
 int main()
 {
+	ncClear();
 	configureInterrupts();
 	/*ncPrint("[Kernel Main]");
 	ncNewline();
@@ -103,7 +104,6 @@ int main()
 
 	ncPrint("[Finished]");
 */
-	ncClear();
 	while(1){}
 
 	return 0;

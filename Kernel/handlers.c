@@ -6,3 +6,12 @@ void keyboardHandlerC()
 {
   keyboardDriver();
 }
+
+void mouseHandlerC()
+{
+  ncPrint("MouseHandlerStart!");
+  ncNewline();
+  mouseDriver();
+  ncPrint("MouseHandlerEnd!");
+  ncNewline();
+}
