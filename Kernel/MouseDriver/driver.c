@@ -71,6 +71,13 @@ void mouseDriver()
               mousePositionY=349;
             if(mousePositionY<0)
               mousePositionY=0;
+            mouseInfo_t mouseInfo;
+            mouseInfo.posX = mousePositionX;
+            mouseInfo.posY = mousePositionY;
+            mouseInfo.rightPressed = (flags&0x02)?1:0;
+            mouseInfo.leftPressed = (flags&0x01)?1:0;
+            terminalMouseUpdate(mouseInfo);
+
             /*ncClear();
             videoPrint(" ", (uint8_t)(24-(mousePositionY*24)/349), (uint8_t)((mousePositionX*79)/999), LIGHT_BLUE_BG);
             */
