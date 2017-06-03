@@ -2,6 +2,7 @@
 #define _MOUSEDRIVER_DRIVER_H
 
   #include <stdint.h>
+  #include "../Terminal/terminal.h"
 
   void initMouse();
   void mouseDriver();
