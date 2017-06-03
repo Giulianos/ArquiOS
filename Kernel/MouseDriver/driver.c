@@ -10,12 +10,14 @@ tomando informacion de:
 #include "driver.h"
 #include <naiveConsole.h>
 
+#include "../VideoDriver/driver.h"
+
 #define MOUSE_WAIT_READ   0x00
 #define MOUSE_WAIT_WRITE  0x01
 #define MOUSE_WAIT_TIMEOUT 10000 //Cantidad de iteraciones antes de abortar espera
 
-static int mousePositionX = 0;
-static int mousePositionY = 0;
+static int mousePositionX = 40; //centrado en la pantalla
+static int mousePositionY = 12;
 
 static uint8_t didOccurFirsrInterrupt = 0;
 
@@ -54,43 +56,33 @@ void mouseDriver()
               return; //Descarto este paquete que solo tiene info de overflow (inservible)
             if(flags&0x20)
               movY |= 0xFFFFFF00;
+            //videoPrint(" ", (uint8_t)(24-(mousePositionY*24)/349), (uint8_t)((mousePositionX*79)/999), BLACK_BG);
             mousePositionX+=movX;
             mousePositionY+=movY;
-            ncClear();
-            ncPrintBin(flags);
-            ncPrintChar(';');
-            ncPrintSignedDec(movX);
-            ncPrintChar(';');
-            ncPrintSignedDec(movY);
-            ncNewline();
+            //los limites de la posicion en x son 0,999
+            //1000 posiciones que luego mapeo a 80
+            if(mousePositionX>=1000)
+              mousePositionX=999;
+            if(mousePositionX<0)
+              mousePositionX=0;
+            //los limites de la posicion en Y son 0,349
+            //350 posiciones que luego mapeo a 25
+            if(mousePositionY>=350)
+              mousePositionY=349;
+            if(mousePositionY<0)
+              mousePositionY=0;
+            mouseInfo_t mouseInfo;
+            mouseInfo.posX = mousePositionX;
+            mouseInfo.posY = mousePositionY;
+            mouseInfo.rightPressed = (flags&0x02)?1:0;
+            mouseInfo.leftPressed = (flags&0x01)?1:0;
+            terminalMouseUpdate(mouseInfo);
+
+            /*ncClear();
+            videoPrint(" ", (uint8_t)(24-(mousePositionY*24)/349), (uint8_t)((mousePositionX*79)/999), LIGHT_BLUE_BG);
+            */
             break;
   }
-
-  /*
-  if(phase == 0)
-  {
-    flags=inputB(0x60);
-    phase++;
-    return;
-  } else if(phase == 1)
-  {
-    movX=inputB(0x60);
-    phase++;
-    mousePositionX += movX*(flags&0x10)?(-1):1;
-    return;
-  } else if(phase == 3)
-  {
-    movY=inputB(0x60);
-    phase++;
-    mousePositionY += movY*(flags&0x20)?(-1):1;
-    return;
-    ncClear();
-    ncPrintDec(mousePositionX);
-    ncPrintChar(';');
-    ncPrintDec(mousePositionY);
-    ncNewline();
-    phase=0;
-  }*/
 }
 
 void initMouse()
