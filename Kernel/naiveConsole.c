@@ -36,6 +36,16 @@ void ncPrintDec(uint64_t value)
 	ncPrintBase(value, 10);
 }
 
+void ncPrintSignedDec(int value)
+{
+	if(value<0)
+	{
+		ncPrintChar('-');
+		value*=-1;
+	}
+	ncPrintDec(value);
+}
+
 void ncPrintHex(uint64_t value)
 {
 	ncPrintBase(value, 16);
