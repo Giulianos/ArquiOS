@@ -1,13 +1,17 @@
 #include <stdint.h>
-#include "MouseDriver/driver.h"
-#include "KeyboardDriver/driver.h"
-#include "VideoDriver/driver.h"
+#include "../KeyboardDriver/driver.h"
+#include "../MouseDriver/driver.h"
+#include "../VideoDriver/driver.h"
 #define SCREEN_WIDTH 80
 #define SCREEN_HEIGHT 25
 #define QUIET 0
 #define L_PRESSING 1
 #define MOVING 2
 #define DRAGGING 3 //apretar y mover
+
+#define DEFAULT_TEXT_ATTR BLACK_BG | WHITE_FG
+#define SELECTED_TEXT_ATTR WHITE_FG | LIGHT_BLUE_BG
+
 static uint8_t screenText[SCREEN_HEIGHT][SCREEN_WIDTH];
 static uint8_t selectedText[SCREEN_HEIGHT][SCREEN_WIDTH];
 static uint8_t cursorX = SCREEN_WIDTH/2; //centrado
@@ -21,9 +25,9 @@ void selectText(uint8_t initialX, uint8_t initialY, uint8_t finalX, uint8_t fina
 {
   uint8_t x;
   uint8_t y;
-  for(x=initialX, x<=finalX, x++)
+  for(x=initialX; x<=finalX; x++)
   {
-    for(y=initialY, y<=finalY, y++)
+    for(y=initialY; y<=finalY; y++)
     {
       selectedText[y][x]=1;
     }
@@ -34,11 +38,24 @@ void deselectText()
 {
   uint8_t x;
   uint8_t y;
-  for(x=pressingStartsX, x<=pressingEndsX, x++)
+  for(x=pressingStartsX; x<=pressingEndsX; x++)
   {
-    for(y=pressingStartsY, y<=pressingEndsY, y++)
+    for(y=pressingStartsY; y<=pressingEndsY; y++)
     {
       selectedText[y][x]=0;
+    }
+  }
+}
+
+void updateScreen()
+{
+  uint8_t i, j, attr;
+  for(i=0; i<SCREEN_HEIGHT; i++)
+  {
+    for(j=0; j<SCREEN_WIDTH; j++)
+    {
+        attr=(selectedText[i][j]==1)?SELECTED_TEXT_ATTR:DEFAULT_TEXT_ATTR;
+        videoPutChar(screenText[i][j], i, j, attr);
     }
   }
 }
@@ -168,4 +185,5 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                       break;
                     }
   }
+  updateScreen();
 }

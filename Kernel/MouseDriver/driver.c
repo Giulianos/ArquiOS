@@ -10,7 +10,8 @@ tomando informacion de:
 #include "driver.h"
 #include <naiveConsole.h>
 
-#include "../VideoDriver/driver.h"
+#include "../VideoDriver/driver.h" //Should be deleted 
+#include "../Terminal/terminal.h"
 
 #define MOUSE_WAIT_READ   0x00
 #define MOUSE_WAIT_WRITE  0x01

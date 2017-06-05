@@ -38,5 +38,7 @@
   #define WHITE_FG 0x0F
 
   uint8_t videoPrint(char* msg, uint8_t row, uint8_t col, uint8_t attr);
+  uint8_t videoPutChar(char c, uint8_t row, uint8_t col, uint8_t attr);
+
 
 #endif
