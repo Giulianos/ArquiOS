@@ -17,7 +17,7 @@ tomando informacion de:
 static int mousePositionX = 0;
 static int mousePositionY = 0;
 
-static uint8_t didOccurFirsrInterrupt = 0;
+static uint8_t didOccurFirsrInterrupt = 1;
 
 static void mouseWait(uint8_t bit);
 static uint8_t mouseRead();
