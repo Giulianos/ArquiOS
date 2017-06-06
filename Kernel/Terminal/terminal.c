@@ -12,6 +12,7 @@
 
 #define DEFAULT_TEXT_ATTR BLACK_BG | WHITE_FG
 #define SELECTED_TEXT_ATTR WHITE_FG | LIGHT_BLUE_BG
+#define CURSOR_ATTR LIGHT_GREEN_BG | LIGHT_GREEN_FG
 
 static uint8_t screenText[SCREEN_HEIGHT][SCREEN_WIDTH];
 static uint8_t selectedText[SCREEN_HEIGHT][SCREEN_WIDTH];
@@ -59,6 +60,7 @@ void updateScreen()
         videoPutChar(screenText[i][j], i, j, attr);
     }
   }
+  videoPutChar(screenText[cursorY][cursorX], cursorY, cursorX, CURSOR_ATTR);
 }
 
 void copy()
@@ -199,5 +201,4 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                     }
   }
   updateScreen();
-
 }
