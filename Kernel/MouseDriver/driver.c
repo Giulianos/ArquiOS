@@ -10,15 +10,15 @@ tomando informacion de:
 #include "driver.h"
 #include <naiveConsole.h>
 
-#include "../VideoDriver/driver.h" //Should be deleted 
+#include "../VideoDriver/driver.h" //Should be deleted
 #include "../Terminal/terminal.h"
 
 #define MOUSE_WAIT_READ   0x00
 #define MOUSE_WAIT_WRITE  0x01
 #define MOUSE_WAIT_TIMEOUT 10000 //Cantidad de iteraciones antes de abortar espera
 
-static int mousePositionX = 40; //centrado en la pantalla
-static int mousePositionY = 12;
+static int mousePositionX = 500; //centrado en la pantalla
+static int mousePositionY = 175;
 
 static uint8_t didOccurFirsrInterrupt = 0;
 

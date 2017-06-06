@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <naiveConsole.h>
 #include "../KeyboardDriver/driver.h"
 #include "../MouseDriver/driver.h"
 #include "../VideoDriver/driver.h"
@@ -38,9 +39,9 @@ void deselectText()
 {
   uint8_t x;
   uint8_t y;
-  for(x=pressingStartsX; x<=pressingEndsX; x++)
+  for(x=0; x<=SCREEN_WIDTH; x++)
   {
-    for(y=pressingStartsY; y<=pressingEndsY; y++)
+    for(y=0; y<=SCREEN_HEIGHT; y++)
     {
       selectedText[y][x]=0;
     }
@@ -69,6 +70,10 @@ void terminalMouseUpdate(mouseInfo_t mouse)
   //paso los valores de posX y posY al rango de la terminal.
   mouse.posX = (uint8_t)((mouse.posX*79)/999);
   mouse.posY = (uint8_t)(24-(mouse.posY*24)/349);
+  ncClear();
+  ncPrintDec(mouse.posX);
+  ncNewline();
+  ncPrintDec(mouse.posY);
   static uint8_t state = QUIET;
   switch (state) {
     case QUIET: if(mouse.leftPressed && (cursorX != mouse.posX || cursorY != mouse.posY))
@@ -98,16 +103,7 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                 }
                 else //sigo en QUIET
                   break;
-    case L_PRESSING:  if(!mouse.leftPressed)
-                      { //paso a QUIET, copio y dejo de seleccionar
-                        pressingEndsX = cursorX;
-                        pressingEndsY = cursorY;
-                        copy();
-                        deselectText();
-                        state = QUIET;
-                        break;
-                      }
-                      if(!mouse.leftPressed && (cursorX != mouse.posX || cursorY != mouse.posY))
+    case L_PRESSING:  if(!mouse.leftPressed && (cursorX != mouse.posX || cursorY != mouse.posY))
                       { //paso a MOVING, copio, dejo de seleccionar y actualizo el cursor
                         pressingEndsX = cursorX;
                         pressingEndsY = cursorY;
@@ -118,7 +114,16 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                         state = MOVING;
                         break;
                       }
-                      if(cursorX != mouse.posX || cursorY != mouse.posY)
+                      else if(!mouse.leftPressed)
+                      { //paso a QUIET, copio y dejo de seleccionar
+                        pressingEndsX = cursorX;
+                        pressingEndsY = cursorY;
+                        copy();
+                        deselectText();
+                        state = QUIET;
+                        break;
+                      }
+                      else if(cursorX != mouse.posX || cursorY != mouse.posY)
                       { // paso a DRAGGING, selecciono y actualizo cursor
                         selectText(cursorX ,cursorY, mouse.posX, mouse.posY);
                         cursorX = mouse.posX;
@@ -129,12 +134,7 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                       else //sigo en L_PRESSING
                         break;
 
-  case MOVING:  if(cursorX == mouse.posX && cursorY == mouse.posY)
-                { //paso a QUIET
-                  state = QUIET;
-                  break;
-                }
-                if((cursorX == mouse.posX && cursorY == mouse.posY) && mouse.leftPressed)
+  case MOVING:  if((cursorX == mouse.posX && cursorY == mouse.posY) && mouse.leftPressed)
                 { // paso a L_PRESSING, inicializo pressing y selecciono
                   pressingStartsX = cursorX;
                   pressingStartsY = cursorY;
@@ -142,7 +142,12 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                   state = L_PRESSING;
                   break;
                 }
-                if(mouse.leftPressed)
+                else if(cursorX == mouse.posX && cursorY == mouse.posY)
+                { //paso a QUIET
+                  state = QUIET;
+                  break;
+                }
+                else if(mouse.leftPressed)
                 { //paso a DRAGGING, inicializo pressing, selecciono y actualizo cursor
                   pressingStartsX = cursorX;
                   pressingStartsY = cursorY;
@@ -152,7 +157,23 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                   state = DRAGGING;
                   break;
                 }
-    case DRAGGING:  if(!mouse.leftPressed)
+                else
+                { //sigo en MOVING
+                  cursorX = mouse.posX;
+                  cursorY = mouse.posY;
+                  break;
+                }
+    case DRAGGING:  if((cursorX == mouse.posX && cursorY == mouse.posY)&&!mouse.leftPressed)
+                    { //paso a QUIET, selecciono posicion actual, copio, dejo de seleccionar
+                      selectText(cursorX, cursorY, cursorX, cursorY);
+                      pressingEndsX = cursorX;
+                      pressingEndsY = cursorY;
+                      copy();
+                      deselectText();
+                      state = QUIET;
+                      break;
+                    }
+                    else if(!mouse.leftPressed)
                     { //paso a MOVING, copio y dejo de seleccionar, actualizo cursor
                       pressingEndsX = cursorX;
                       pressingEndsY = cursorY;
@@ -163,18 +184,10 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                       state = MOVING;
                       break;
                     }
-                    if(cursorX == mouse.posX && cursorY == mouse.posY)
+                    else if(cursorX == mouse.posX && cursorY == mouse.posY)
                     { //paso a L_PRESSING, selecciono posicion actual
                       selectText(cursorX, cursorY, cursorX, cursorY);
                       state = L_PRESSING;
-                      break;
-                    }
-                    if((cursorX == mouse.posX && cursorY == mouse.posY)&&!mouse.leftPressed)
-                    { //paso a QUIET, selecciono posicion actual, copio, dejo de seleccionar
-                      selectText(cursorX, cursorY, cursorX, cursorY);
-                      copy();
-                      deselectText();
-                      state = QUIET;
                       break;
                     }
                     else
@@ -186,4 +199,5 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                     }
   }
   updateScreen();
+
 }
