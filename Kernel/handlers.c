@@ -2,6 +2,8 @@
 #include <hardwareCom.h>
 #include <naiveConsole.h>
 #include "KeyboardDriver/driver.h"
+#include "MouseDriver/driver.h"
+
 void keyboardHandlerC()
 {
   keyboardDriver();
@@ -9,9 +11,9 @@ void keyboardHandlerC()
 
 void mouseHandlerC()
 {
-  ncPrint("MouseHandlerStart!");
+  //ncPrint("MouseHandlerStart!");
   ncNewline();
   mouseDriver();
-  ncPrint("MouseHandlerEnd!");
+  //ncPrint("MouseHandlerEnd!");
   ncNewline();
 }
