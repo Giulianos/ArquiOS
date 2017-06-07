@@ -3,6 +3,8 @@
 #include "../KeyboardDriver/driver.h"
 #include "../MouseDriver/driver.h"
 #include "../VideoDriver/driver.h"
+#include "keyMapping.h"
+
 #define SCREEN_WIDTH 80
 #define SCREEN_HEIGHT 25
 #define QUIET 0
@@ -23,6 +25,23 @@ static uint8_t pressingStartsY;
 static uint8_t pressingEndsX;
 static uint8_t pressingEndsY;
 
+//KEYBOARD
+void terminalKeyboardUpdate(keycode_t key)
+{
+  static uint8_t state = 0;
+
+  if(!(updateState(key, &state))&& key.action == KBD_ACTION_PRESSED)
+  {
+    uint8_t ascii = getAscii(key, state);
+    ncPrintChar(ascii);
+  }
+}
+
+
+
+
+
+//MOUSE
 void selectText(uint8_t initialX, uint8_t initialY, uint8_t finalX, uint8_t finalY)
 {
   uint8_t x;
@@ -66,15 +85,6 @@ void updateScreen()
 void copy()
 {
 
-}
-
-void terminalKeyboardUpdate(keycode_t key)
-{
-  ncClear();
-  ncPrint("Keycode: ");
-  ncPrintHex(key.code);
-  ncPrint(" Action: ");
-  ncPrint((key.action==KBD_ACTION_RELEASED)?"Release":"Press");
 }
 
 void terminalMouseUpdate(mouseInfo_t mouse)
