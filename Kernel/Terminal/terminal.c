@@ -67,6 +67,16 @@ void copy()
 {
 
 }
+
+void terminalKeyboardUpdate(keycode_t key)
+{
+  ncClear();
+  ncPrint("Keycode: ");
+  ncPrintHex(key.code);
+  ncPrint(" Action: ");
+  ncPrint((key.action==KBD_ACTION_RELEASED)?"Release":"Press");
+}
+
 void terminalMouseUpdate(mouseInfo_t mouse)
 {
   //paso los valores de posX y posY al rango de la terminal.
