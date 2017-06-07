@@ -1,10 +1,12 @@
 #include <stdint.h>
-#include <naiveConsole.h>
+#include <hardwareCom.h>
+#include "../Terminal/terminal.h"
+#include "driver.h"
 
 void keyboardDriver()
 {
   static uint8_t phase = 0;
-  static uint8_t seccondB = 0;
+  static uint8_t secondB = 0;
   static uint8_t firstB;
   if(phase == 0)
   {
@@ -13,17 +15,13 @@ void keyboardDriver()
       phase++;
     else
     {
-      //ncPrintHex(firstB);
-      //ncNewline();
+      terminalKeyboardUpdate(scancodeToKeycode(firstB, secondB));
     }
   }
   else
   {
-    seccondB = inputB(0x60);
+    secondB = inputB(0x60);
     phase = 0;
-    //ncPrintHex(firstB);
-    //ncPrintChar(' ');
-    //ncPrintHex(seccondB);
-    //ncNewline();
+    terminalKeyboardUpdate(scancodeToKeycode(firstB, secondB));
   }
 }
