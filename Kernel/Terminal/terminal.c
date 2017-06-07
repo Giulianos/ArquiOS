@@ -44,14 +44,21 @@ void terminalKeyboardUpdate(keycode_t key)
 //MOUSE
 void selectText(uint8_t initialX, uint8_t initialY, uint8_t finalX, uint8_t finalY)
 {
-  uint8_t x;
-  uint8_t y;
-  for(x=initialX; x<=finalX; x++)
+  uint16_t startPos = initialY * SCREEN_WIDTH + initialX;
+  uint16_t endPos = finalY * SCREEN_WIDTH + finalX;
+  uint8_t x, y;
+  if(startPos>endPos)
   {
-    for(y=initialY; y<=finalY; y++)
-    {
-      selectedText[y][x]=1;
-    }
+    uint16_t aux = startPos;
+    startPos = endPos;
+    endPos = aux;
+  }
+  while(startPos<=endPos)
+  {
+    y=startPos/SCREEN_WIDTH;
+    x=startPos-y*SCREEN_WIDTH;
+    selectedText[y][x]=1;
+    startPos++;
   }
 }
 
@@ -102,7 +109,8 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                 { //paso a DRAGGING, debo seleccionar
                   pressingStartsX = cursorX;
                   pressingStartsY = cursorY;
-                  selectText(cursorX ,cursorY, mouse.posX, mouse.posY);
+                  deselectText();
+                  selectText(pressingStartsX , pressingStartsY, mouse.posX, mouse.posY);
                   cursorX = mouse.posX;
                   cursorY = mouse.posY;
                   state = DRAGGING;
@@ -119,7 +127,8 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                 { // paso a L_PRESSING, empiezo la seleccion
                   pressingStartsX = cursorX;
                   pressingStartsY = cursorY;
-                  selectText(cursorX, cursorY, cursorX, cursorY);
+                  deselectText();
+                  selectText(pressingStartsX , pressingStartsY, mouse.posX, mouse.posY);
                   state = L_PRESSING;
                   break;
                 }
@@ -147,7 +156,8 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                       }
                       else if(cursorX != mouse.posX || cursorY != mouse.posY)
                       { // paso a DRAGGING, selecciono y actualizo cursor
-                        selectText(cursorX ,cursorY, mouse.posX, mouse.posY);
+                        deselectText();
+                        selectText(pressingStartsX , pressingStartsY, mouse.posX, mouse.posY);
                         cursorX = mouse.posX;
                         cursorY = mouse.posY;
                         state = DRAGGING;
@@ -160,7 +170,8 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                 { // paso a L_PRESSING, inicializo pressing y selecciono
                   pressingStartsX = cursorX;
                   pressingStartsY = cursorY;
-                  selectText(cursorX, cursorY, cursorX, cursorY);
+                  deselectText();
+                  selectText(pressingStartsX , pressingStartsY, mouse.posX, mouse.posY);
                   state = L_PRESSING;
                   break;
                 }
@@ -173,7 +184,8 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                 { //paso a DRAGGING, inicializo pressing, selecciono y actualizo cursor
                   pressingStartsX = cursorX;
                   pressingStartsY = cursorY;
-                  selectText(cursorX, cursorY, mouse.posX, mouse.posY);
+                  deselectText();
+                  selectText(pressingStartsX , pressingStartsY, mouse.posX, mouse.posY);
                   cursorX = mouse.posX;
                   cursorY = mouse.posY;
                   state = DRAGGING;
@@ -187,7 +199,8 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                 }
     case DRAGGING:  if((cursorX == mouse.posX && cursorY == mouse.posY)&&!mouse.leftPressed)
                     { //paso a QUIET, selecciono posicion actual, copio, dejo de seleccionar
-                      selectText(cursorX, cursorY, cursorX, cursorY);
+                      deselectText();
+                      selectText(pressingStartsX , pressingStartsY, mouse.posX, mouse.posY);
                       pressingEndsX = cursorX;
                       pressingEndsY = cursorY;
                       copy();
@@ -208,13 +221,15 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                     }
                     else if(cursorX == mouse.posX && cursorY == mouse.posY)
                     { //paso a L_PRESSING, selecciono posicion actual
-                      selectText(cursorX, cursorY, cursorX, cursorY);
+                      deselectText();
+                      selectText(pressingStartsX , pressingStartsY, mouse.posX, mouse.posY);
                       state = L_PRESSING;
                       break;
                     }
                     else
                     { // sigo en DRAGGING, selecciono y actualizo cursor
-                      selectText(cursorX, cursorY, mouse.posX, mouse.posY);
+                      deselectText();
+                      selectText(pressingStartsX , pressingStartsY, mouse.posX, mouse.posY);
                       cursorX = mouse.posX;
                       cursorY = mouse.posY;
                       break;
