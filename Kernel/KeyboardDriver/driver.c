@@ -13,17 +13,17 @@ void keyboardDriver()
       phase++;
     else
     {
-      ncPrintHex(firstB);
-      ncNewline();
+      //ncPrintHex(firstB);
+      //ncNewline();
     }
   }
   else
   {
     seccondB = inputB(0x60);
     phase = 0;
-    ncPrintHex(firstB);
-    ncPrintChar(' ');
-    ncPrintHex(seccondB);
-    ncNewline();
+    //ncPrintHex(firstB);
+    //ncPrintChar(' ');
+    //ncPrintHex(seccondB);
+    //ncNewline();
   }
 }
