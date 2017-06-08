@@ -25,6 +25,83 @@ static uint8_t pressingStartsY;
 static uint8_t pressingEndsX;
 static uint8_t pressingEndsY;
 
+//TEXT
+
+static uint8_t currentScreenRow = 0;
+static uint8_t currentScreenCol = 0;
+
+void scrolling()
+{
+  uint8_t i;
+  uint8_t j;
+  for(i=0; i<SCREEN_HEIGHT-1; i++)
+  {
+    for(j=0; j<SCREEN_WIDTH; j++)
+    {
+      screenText[i][j] = screenText[i+1][j];
+    }
+  }
+  for(j=0; j<SCREEN_WIDTH; j++)
+    screenText[i][j] = ' ';
+  currentScreenRow = SCREEN_HEIGHT-1;
+  currentScreenCol = 0;
+}
+
+void terminalPutChar(uint8_t ascii)
+{
+  if(currentScreenRow == SCREEN_HEIGHT)
+  {
+    scrolling();
+  }
+  if(ascii == '\n') //enter
+  {
+    currentScreenRow++;
+    currentScreenCol = 0;
+    return;
+  }
+  if(ascii == 8) //backspace
+  {
+    if(currentScreenRow == 0)
+    {
+      if(currentScreenCol == 0)
+        return;
+      currentScreenCol--;
+    }
+    else if(currentScreenCol == 0)
+    {
+      currentScreenRow--;
+      currentScreenCol=SCREEN_WIDTH-1;
+    } else
+    {
+      currentScreenCol--;
+    }
+    screenText[currentScreenRow][currentScreenCol] = ' ';
+    return;
+  }
+  screenText[currentScreenRow][currentScreenCol++] = ascii;
+  if(currentScreenCol == SCREEN_WIDTH)
+  {
+    currentScreenCol = 0;
+    currentScreenRow++;
+  }
+}
+
+//VIDEO
+
+void updateScreen()
+{
+  uint8_t i, j, attr;
+  for(i=0; i<SCREEN_HEIGHT; i++)
+  {
+    for(j=0; j<SCREEN_WIDTH; j++)
+    {
+        attr=(selectedText[i][j]==1)?SELECTED_TEXT_ATTR:DEFAULT_TEXT_ATTR;
+        videoPutChar(screenText[i][j], i, j, attr);
+    }
+  }
+  videoPutChar(screenText[cursorY][cursorX], cursorY, cursorX, CURSOR_ATTR);
+}
+
 //KEYBOARD
 void terminalKeyboardUpdate(keycode_t key)
 {
@@ -33,12 +110,10 @@ void terminalKeyboardUpdate(keycode_t key)
   if(!(updateState(key, &state))&& key.action == KBD_ACTION_PRESSED)
   {
     uint8_t ascii = getAscii(key, state);
-    ncPrintChar(ascii);
+    terminalPutChar(ascii);
+    updateScreen();
   }
 }
-
-
-
 
 
 //MOUSE
@@ -75,19 +150,6 @@ void deselectText()
   }
 }
 
-void updateScreen()
-{
-  uint8_t i, j, attr;
-  for(i=0; i<SCREEN_HEIGHT; i++)
-  {
-    for(j=0; j<SCREEN_WIDTH; j++)
-    {
-        attr=(selectedText[i][j]==1)?SELECTED_TEXT_ATTR:DEFAULT_TEXT_ATTR;
-        videoPutChar(screenText[i][j], i, j, attr);
-    }
-  }
-  videoPutChar(screenText[cursorY][cursorX], cursorY, cursorX, CURSOR_ATTR);
-}
 
 void copy()
 {
