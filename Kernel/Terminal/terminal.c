@@ -115,7 +115,6 @@ void terminalKeyboardUpdate(keycode_t key)
   }
 }
 
-
 //MOUSE
 void selectText(uint8_t initialX, uint8_t initialY, uint8_t finalX, uint8_t finalY)
 {
