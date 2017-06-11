@@ -14,6 +14,8 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
+extern uint64_t systemCall(uint64_t rax,uint64_t rbx,uint64_t rcx,uint64_t rdx,uint64_t rsi,uint64_t rdi);
+
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
 
@@ -104,7 +106,8 @@ int main()
 
 	ncPrint("[Finished]");
 */
-	while(1){}
+	while(1){
+	}
 
 	return 0;
 }

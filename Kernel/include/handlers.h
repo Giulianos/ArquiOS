@@ -3,4 +3,5 @@
 
   void keyboardHandler();
   void mouseHandler();
+  void systemCallHandler();
 #endif

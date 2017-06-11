@@ -24,5 +24,6 @@ void configureInterrupts()
   initMouse();
   setIDTEntry(0x21, (uint64_t)keyboardHandler); //Handler de la interrupcion de teclado
   setIDTEntry(0x2C, (uint64_t)mouseHandler); //Handler de la interrupcion de mouse
+  setIDTEntry(0x80, (uint64_t)systemCallHandler);
   sti();//Habilito las interrupciones
 }

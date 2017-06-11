@@ -2,7 +2,8 @@ global keyboardHandler
 extern keyboardHandlerC
 global mouseHandler
 extern mouseHandlerC
-global dummyHandler
+global systemCallHandler
+extern terminalSysCallHandler
 
 %include "./asm/macros.m"
 
@@ -27,4 +28,17 @@ mouseHandler:
   out 0x20, al ;ACK al slave pic
   popaq
   sti
+  iretq
+
+systemCallHandler:
+  pushaq
+  cld
+  mov r9, rdi
+  mov r8, rsi
+  mov r10, rdx
+  mov rdi, rax
+  mov rsi, rbx
+  mov rdx, rcx
+  call terminalSysCallHandler ; terminalSysCallHandler(rax,rbx,rcx,rdx,rsi,rdi)
+  popaq
   iretq
