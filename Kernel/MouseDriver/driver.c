@@ -6,12 +6,12 @@ tomando informacion de:
   - http://forum.osdev.org/viewtopic.php?t=10247
 */
 
-#i//nclude <hardwareCom.h>
-#i//nclude "driver.h"
-#i//nclude <naiveConsole.h>
+#include <hardwareCom.h>
+#include "driver.h"
+#include <naiveConsole.h>
 
-#i//nclude "../VideoDriver/driver.h" //Should be deleted
-#i//nclude "../Terminal/terminal.h"
+#include "../VideoDriver/driver.h" //Should be deleted
+#include "../Terminal/terminal.h"
 
 #define MOUSE_WAIT_READ   0x00
 #define MOUSE_WAIT_WRITE  0x01
