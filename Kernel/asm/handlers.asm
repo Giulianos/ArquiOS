@@ -2,7 +2,8 @@ global keyboardHandler
 extern keyboardHandlerC
 global mouseHandler
 extern mouseHandlerC
-global dummyHandler
+global spuriousInt7Handler
+global spuriousInt15Handler
 extern inputB
 extern outputB
 

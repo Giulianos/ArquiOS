@@ -3,4 +3,7 @@
 
   void keyboardHandler();
   void mouseHandler();
+  void spuriousInt7Handler();
+  void spuriousInt15Handler();
+
 #endif

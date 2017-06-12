@@ -20,7 +20,7 @@ tomando informacion de:
 static int mousePositionX = 500; //centrado en la pantalla
 static int mousePositionY = 175;
 
-static uint8_t didOccurFirsrInterrupt = 0;
+static uint8_t didOccurFirsrInterrupt = 1;
 
 static void mouseWait(uint8_t bit);
 static uint8_t mouseRead();
@@ -28,8 +28,15 @@ static void mouseWrite(uint8_t data);
 
 //Comandos del mouse: http://wiki.osdev.org/Mouse_Input#Useful_Mouse_Command_Set
 
+static void isMouseInterrupt()
+{
+  
+}
+
 void mouseDriver()
 {
+
+
 
   if(!didOccurFirsrInterrupt)
   {
