@@ -20,10 +20,13 @@ void setIDTEntry(uint16_t entry, uint64_t offset)
 
 void configureInterrupts()
 {
-  writePICMask(0xEFF9); //Habilito solo las interrupciones de teclado y mouse
+  //0110 1111 0111 1001
+  writePICMask(0x6F79); //Habilito solo las interrupciones de teclado, mouse y las spurious (7 y 15)
   initMouse();
   setIDTEntry(0x21, (uint64_t)keyboardHandler); //Handler de la interrupcion de teclado
   setIDTEntry(0x2C, (uint64_t)mouseHandler); //Handler de la interrupcion de mouse
   setIDTEntry(0x80, (uint64_t)systemCallHandler);
+  setIDTEntry(0x27, (uint64_t)spuriousInt7Handler);
+  setIDTEntry(0x2F, (uint64_t)spuriousInt15Handler);
   sti();//Habilito las interrupciones
 }

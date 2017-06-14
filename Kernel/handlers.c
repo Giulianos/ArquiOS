@@ -11,9 +11,5 @@ void keyboardHandlerC()
 
 void mouseHandlerC()
 {
-  //ncPrint("MouseHandlerStart!");
-  ncNewline();
   mouseDriver();
-  //ncPrint("MouseHandlerEnd!");
-  ncNewline();
 }

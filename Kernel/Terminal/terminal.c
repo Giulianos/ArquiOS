@@ -37,6 +37,7 @@ static uint8_t readChars = 0;
 
 static uint8_t currentScreenRow = 0;
 static uint8_t currentScreenCol = 0;
+//TEXT
 
 void scrolling()
 {
@@ -109,6 +110,7 @@ void updateScreen()
     }
   }
   videoPutChar(screenText[cursorY][cursorX], cursorY, cursorX, CURSOR_ATTR);
+  videoPutChar((!currentScreenRow && !currentScreenCol)?'0':'D' ,SCREEN_HEIGHT-1,SCREEN_WIDTH-1, DEFAULT_TEXT_ATTR);
 }
 
 //KEYBOARD
@@ -210,9 +212,9 @@ void deselectText()
 {
   uint8_t x;
   uint8_t y;
-  for(x=0; x<=SCREEN_WIDTH; x++)
+  for(x=0; x<SCREEN_WIDTH; x++)
   {
-    for(y=0; y<=SCREEN_HEIGHT; y++)
+    for(y=0; y<SCREEN_HEIGHT; y++)
     {
       selectedText[y][x]=0;
     }
@@ -230,10 +232,6 @@ void terminalMouseUpdate(mouseInfo_t mouse)
   //paso los valores de posX y posY al rango de la terminal.
   mouse.posX = (uint8_t)((mouse.posX*79)/999);
   mouse.posY = (uint8_t)(24-(mouse.posY*24)/349);
-  ncClear();
-  ncPrintDec(mouse.posX);
-  ncNewline();
-  ncPrintDec(mouse.posY);
   static uint8_t state = QUIET;
   switch (state) {
     case QUIET: if(mouse.leftPressed && (cursorX != mouse.posX || cursorY != mouse.posY))
