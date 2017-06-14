@@ -28,15 +28,17 @@ static void mouseWrite(uint8_t data);
 
 //Comandos del mouse: http://wiki.osdev.org/Mouse_Input#Useful_Mouse_Command_Set
 
-static void isMouseInterrupt()
+static uint8_t isMouseInterrupt()
 {
-  
+  return inputB(0x64)&0x20;
 }
 
 void mouseDriver()
 {
+  uint8_t statusReg  = inputB(0x64);
 
-
+  if(!statusReg&0x20 || !statusReg&0x01)
+    return;
 
   if(!didOccurFirsrInterrupt)
   {
