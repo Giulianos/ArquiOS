@@ -37,7 +37,7 @@ mouseHandler:
 
 systemCallHandler:
   pushaq
-  cld
+  sti
   mov r9, rdi
   mov r8, rsi
   mov r10, rdx

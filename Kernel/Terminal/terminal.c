@@ -110,7 +110,6 @@ void updateScreen()
     }
   }
   videoPutChar(screenText[cursorY][cursorX], cursorY, cursorX, CURSOR_ATTR);
-  videoPutChar((!currentScreenRow && !currentScreenCol)?'0':'D' ,SCREEN_HEIGHT-1,SCREEN_WIDTH-1, DEFAULT_TEXT_ATTR);
 }
 
 //KEYBOARD
@@ -123,8 +122,11 @@ void terminalKeyboardUpdate(keycode_t key)
     uint8_t ascii = getAscii(key, state);
     if(ascii == 8)//backspace
     {
+      if(bufferIsEmpty())
+        return;
       terminalEraseChar(); //borro el char de la pantalla
       eraseFromBuffer(); //borro el char de la pantalla
+      updateScreen();
     }
     else if(ascii == '\n')
     {
@@ -149,7 +151,7 @@ void terminalKeyboardUpdate(keycode_t key)
 uint64_t readFromBuffer(uint8_t *target, uint64_t size)
 {
   uint64_t i = 0;
-  while(!enterPressed || readChars<size){/*Espero*/}
+  while(!enterPressed && readChars<size){/*Espero*/}
   enterPressed=0;
   readChars=0;
   while(!bufferIsEmpty())
