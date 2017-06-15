@@ -8,6 +8,7 @@ global spuriousInt7Handler
 global spuriousInt15Handler
 extern inputB
 extern outputB
+extern ncPrintHex
 
 %include "./asm/macros.m"
 
@@ -40,9 +41,10 @@ systemCallHandler:
   mov r9, rdi
   mov r8, rsi
   mov r10, rdx
+  mov rdx, rcx
+  mov rcx, r10
   mov rdi, rax
   mov rsi, rbx
-  mov rdx, rcx
   call terminalSysCallHandler ; terminalSysCallHandler(rax,rbx,rcx,rdx,rsi,rdi)
   popaq
   iretq

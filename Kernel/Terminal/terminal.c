@@ -166,7 +166,9 @@ void writeToScreen(uint8_t *target, uint64_t size)
   while(i<size)
   {
     terminalPutChar(*(target++));
+    i++;
   }
+  updateScreen();
 }
 
 void run(uint64_t moduleNumber)
@@ -175,16 +177,16 @@ void run(uint64_t moduleNumber)
 }
 
 uint64_t terminalSysCallHandler(uint64_t rax,uint64_t rbx,uint64_t rcx,uint64_t rdx,uint64_t rsi,uint64_t rdi)
-{/*
+{
   switch(rax)
   {
     case SYSCALL_READ: readFromBuffer((uint8_t*)rcx, rdx); break; //Esta funcion lee del buffer de teclado
-    case SYSCALL_WRITE: writeToScreen((uint8_t*)rcx, rdx); break; //Esta funcion escribe en pantalla
+    case SYSCALL_WRITE:  writeToScreen((uint8_t*)rcx, rdx); break; //Esta funcion escribe en pantalla
     case SYSCALL_EXECVE: run(rbx); break; //Recibe el numero de modulo, lo copia en memoria y lo ejecuta
     case SYSCALL_EXIT: run(0x00); break;//Hace lo mismo que execve con 00 (numero del modulo de la shell)
     default: return;//imprimo "Undefined syscall"
   }
-  ncPrint("Syscall Handled!");*/
+
 }
 
 //MOUSE

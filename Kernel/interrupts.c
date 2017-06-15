@@ -20,6 +20,7 @@ void setIDTEntry(uint16_t entry, uint64_t offset)
 
 void configureInterrupts()
 {
+  cli();
   //0110 1111 0111 1001
   writePICMask(0x6F79); //Habilito solo las interrupciones de teclado, mouse y las spurious (7 y 15)
   initMouse();

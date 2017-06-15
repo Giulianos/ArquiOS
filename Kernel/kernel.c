@@ -106,6 +106,11 @@ int main()
 
 	ncPrint("[Finished]");
 */
+
+	((EntryPoint)sampleCodeModuleAddress)();
+
+	//systemCall();
+
 	while(1){
 	}
 

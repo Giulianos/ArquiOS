@@ -1,19 +1,10 @@
 /* sampleCodeModule.c */
+#include <stdint.h>
 
-char * v = (char*)0xB8000 + 79 * 2;
-
-static int var1 = 0;
-static int var2 = 0;
-
+extern uint64_t systemCall(uint64_t eax, uint64_t rbx, uint64_t rcx, uint64_t rdx, uint64_t rsi, uint64_t rdi);
 
 int main() {
-	//All the following code may be removed 
-	*v = 'X';
-	*(v+1) = 0x74;
-
-	//Test if BSS is properly set up
-	if (var1 == 0 && var2 == 0)
-		return 0xDEADC0DE;
-
+	//Lets print something through syscalls
+	systemCall(0x04, 0x00, (uint64_t)"Hola!", 5, 0, 0);
 	return 0xDEADBEEF;
 }

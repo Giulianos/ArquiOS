@@ -20,7 +20,7 @@ tomando informacion de:
 static int mousePositionX = 500; //centrado en la pantalla
 static int mousePositionY = 175;
 
-static uint8_t didOccurFirsrInterrupt = 1;
+static uint8_t didOccurFirsrInterrupt = 0;
 
 static void mouseWait(uint8_t bit);
 static uint8_t mouseRead();
@@ -35,10 +35,10 @@ static uint8_t isMouseInterrupt()
 
 void mouseDriver()
 {
-  uint8_t statusReg  = inputB(0x64);
+  //uint8_t statusReg  = inputB(0x64);
 
-  if(!statusReg&0x20 || !statusReg&0x01)
-    return;
+  //if(!statusReg&0x20 || !statusReg&0x01)
+    //return;
 
   if(!didOccurFirsrInterrupt)
   {
