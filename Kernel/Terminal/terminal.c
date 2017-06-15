@@ -159,6 +159,7 @@ uint64_t readFromBuffer(uint8_t *target, uint64_t size)
     *(target+i) = getChar();
     i++;
   }
+  target[i]=0;
   return i;
 }
 
