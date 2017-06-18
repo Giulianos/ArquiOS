@@ -1,19 +1,24 @@
 /* sampleCodeModule.c */
+#include <stdint.h>
+#include "stdlib/printf.h"
+#include "stdlib/string.h"
 
-char * v = (char*)0xB8000 + 79 * 2;
-
-static int var1 = 0;
-static int var2 = 0;
-
+extern uint64_t systemCall(uint64_t eax, uint64_t rbx, uint64_t rcx, uint64_t rdx, uint64_t rsi, uint64_t rdi);
+extern void putc ( void* p, char c);
 
 int main() {
-	//All the following code may be removed 
-	*v = 'X';
-	*(v+1) = 0x74;
-
-	//Test if BSS is properly set up
-	if (var1 == 0 && var2 == 0)
-		return 0xDEADC0DE;
-
+	//Lets print something through syscalls
+	char buffer[40];
+	init_printf(0, putc);
+	printf("Hola soy el sampleCodeModule y repito todo lo que digas\n");
+	while(1){
+		printf("- ");
+		systemCall(0x3, 0, buffer, 40, 0, 0);
+		if(!strcmp(buffer, "Hola")) {
+			printf("+ Hola, como andas?\n");
+		} else {
+			printf("+ %s\n", buffer);
+		}
+	}
 	return 0xDEADBEEF;
 }

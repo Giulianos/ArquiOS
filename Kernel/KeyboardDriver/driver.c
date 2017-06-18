@@ -3,11 +3,19 @@
 #include "../Terminal/terminal.h"
 #include "driver.h"
 
+static uint8_t didOccurFirstInterrupt = 0;
+
 void keyboardDriver()
 {
   static uint8_t phase = 0;
   static uint8_t secondB = 0;
   static uint8_t firstB;
+
+  if(!didOccurFirstInterrupt)
+  {
+    didOccurFirstInterrupt=1;
+    return;
+  }
   if(phase == 0)
   {
     firstB = inputB(0x60);

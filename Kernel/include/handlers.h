@@ -3,6 +3,7 @@
 
   void keyboardHandler();
   void mouseHandler();
+  void systemCallHandler();
   void spuriousInt7Handler();
   void spuriousInt15Handler();
 
