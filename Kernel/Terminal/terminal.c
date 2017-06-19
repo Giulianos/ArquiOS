@@ -176,7 +176,6 @@ void writeToScreen(uint8_t *target, uint64_t size)
 
 void run(uint64_t moduleNumber)
 {
-
 }
 
 uint64_t terminalSysCallHandler(uint64_t rax,uint64_t rbx,uint64_t rcx,uint64_t rdx,uint64_t rsi,uint64_t rdi)
