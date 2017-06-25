@@ -21,7 +21,7 @@ extern uint8_t endOfKernel;
 */
 
 static uint8_t * expandedModulesArea = (uint8_t *)0xA00000; //10MB
-static uint8_t * runtimePage = (uint8_t *)0x1400000;
+static uint8_t * runtimePage = (uint8_t *)0x1400000; //20MB
 
 static uint8_t expandedModulesQuantity __attribute__ ((section (".data"))); //BSS will be cleared, so let's put it in data
 
@@ -55,6 +55,11 @@ void loadModulesToKernel()
 uint8_t getModulesQuantity()
 {
   return expandedModulesQuantity;
+}
+
+void changeRuntimePage(uint8_t * pageDir)
+{
+  runtimePage = pageDir;
 }
 
 module_t * getModules()
