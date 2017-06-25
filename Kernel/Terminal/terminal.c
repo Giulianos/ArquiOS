@@ -12,6 +12,7 @@
 #define L_PRESSING 1
 #define MOVING 2
 #define DRAGGING 3 //apretar y mover
+#define PASTE 4
 
 #define DEFAULT_TEXT_ATTR BLACK_BG | WHITE_FG
 #define SELECTED_TEXT_ATTR WHITE_FG | LIGHT_BLUE_BG
@@ -37,6 +38,7 @@ static uint8_t readChars = 0;
 
 static uint8_t currentScreenRow = 0;
 static uint8_t currentScreenCol = 0;
+static uint8_t lastCopied[SCREEN_HEIGHT*SCREEN_WIDTH];
 //TEXT
 
 void scrolling()
@@ -228,7 +230,27 @@ void deselectText()
 
 void copy()
 {
+  uint8_t i, j, k=0;
+  for(i=0; i<SCREEN_HEIGHT; i++)
+  {
+    for(j=0; j<SCREEN_WIDTH; j++)
+    {
+      if(selectedText[i][j] == 1)
+        lastCopied[k++] = screenText[i][j];
+    }
+  }
+  lastCopied[k++]=0;
+}
 
+//lastCopied tiene asciis
+void paste()
+{
+  uint8_t i=0;
+  while(lastCopied[i] != 0)
+  {
+    terminalPutChar(lastCopied[i++]);
+  }
+  updateScreen();
 }
 
 void terminalMouseUpdate(mouseInfo_t mouse)
@@ -238,6 +260,11 @@ void terminalMouseUpdate(mouseInfo_t mouse)
   mouse.posY = (uint8_t)(24-(mouse.posY*24)/349);
   static uint8_t state = QUIET;
   switch (state) {
+    case PASTE: if(!mouse.rightPressed)
+                {
+                  state = QUIET;
+                  break;
+                }
     case QUIET: if(mouse.leftPressed && (cursorX != mouse.posX || cursorY != mouse.posY))
                 { //paso a DRAGGING, debo seleccionar
                   pressingStartsX = cursorX;
@@ -261,6 +288,12 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                   pressingStartsY = cursorY;
                   selectText(cursorX, cursorY, cursorX, cursorY);
                   state = L_PRESSING;
+                  break;
+                }
+                if(mouse.rightPressed)
+                { //paso a PASTE
+                  paste();
+                  state = PASTE;
                   break;
                 }
                 else //sigo en QUIET
@@ -293,6 +326,12 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                         state = DRAGGING;
                         break;
                       }
+                      if(mouse.rightPressed)
+                      { //paso a PASTE
+                        paste();
+                        state = PASTE;
+                        break;
+                      }
                       else //sigo en L_PRESSING
                         break;
 
@@ -317,6 +356,12 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                   cursorX = mouse.posX;
                   cursorY = mouse.posY;
                   state = DRAGGING;
+                  break;
+                }
+                if(mouse.rightPressed)
+                { //paso a PASTE
+                  paste();
+                  state = PASTE;
                   break;
                 }
                 else
@@ -350,6 +395,12 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                     { //paso a L_PRESSING, selecciono posicion actual
                       selectText(cursorX, cursorY, cursorX, cursorY);
                       state = L_PRESSING;
+                      break;
+                    }
+                    if(mouse.rightPressed)
+                    { //paso a PASTE
+                      paste();
+                      state = PASTE;
                       break;
                     }
                     else
