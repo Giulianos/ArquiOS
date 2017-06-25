@@ -3,6 +3,6 @@
 
 #define LINE_LEN 80
 
-uint64_t getline(char * buffer)
+uint64_t getline(char * buffer);
 
 #endif

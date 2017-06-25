@@ -3,6 +3,7 @@
 #include "../KeyboardDriver/driver.h"
 #include "../MouseDriver/driver.h"
 #include "../VideoDriver/driver.h"
+#include "../ModulesManager/modules.h"
 #include "keyMapping.h"
 #include "buffer.h"
 
@@ -178,6 +179,17 @@ void writeToScreen(uint8_t *target, uint64_t size)
 
 void run(uint64_t moduleNumber)
 {
+    if(moduleNumber>=getModulesQuantity())
+    {
+      writeToScreen("Error! Ese modulo no existe\n", 28);
+    }
+    else
+    {
+      loadModuleToRun(moduleNumber);
+      runLoadedModule();
+    }
+    loadModuleToRun(0); //Go back to shell
+  	runLoadedModule();
 }
 
 uint64_t terminalSysCallHandler(uint64_t rax,uint64_t rbx,uint64_t rcx,uint64_t rdx,uint64_t rsi,uint64_t rdi)

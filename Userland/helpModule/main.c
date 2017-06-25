@@ -11,5 +11,6 @@ int main() {
 	printf("Help:");
 	printf("\nhelp   -    Muestra los comandos disponibles");
 	printf("\nhelp   -    Muestra los comandos disponibles");
+	printf("\n");
 	return 0xDEADBEEF;
 }

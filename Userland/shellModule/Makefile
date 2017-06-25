@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-MODULE=../0002-helpModule.bin
+MODULE=../0000-shellModule.bin
 SOURCES_C=$(wildcard *.c)
 SOURCES_ASM=$(wildcard asm/*.asm)
 SOURCES_STDLIB=$(wildcard stdlib/*.c)
