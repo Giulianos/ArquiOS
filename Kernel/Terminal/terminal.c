@@ -156,7 +156,7 @@ void copy()
   uint8_t i, j, k=0;
   for(i=0; i<SCREEN_HEIGHT; i++)
   {
-    for(j=0; j<SCREEN_HEIGHT; j++)
+    for(j=0; j<SCREEN_WIDTH; j++)
     {
       if(selectedText[i][j] == 1)
         lastCopied[k++] = screenText[i][j];
