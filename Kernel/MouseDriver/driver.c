@@ -35,10 +35,10 @@ static uint8_t isMouseInterrupt()
 
 void mouseDriver()
 {
-  uint8_t statusReg  = inputB(0x64);
+  //uint8_t statusReg  = inputB(0x64);
 
-  if(!statusReg&0x20 || !statusReg&0x01)
-    return;
+  //if(!statusReg&0x20 || !statusReg&0x01)
+    //return;
 
   if(!didOccurFirsrInterrupt)
   {

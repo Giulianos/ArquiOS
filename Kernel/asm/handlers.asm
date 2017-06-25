@@ -2,10 +2,13 @@ global keyboardHandler
 extern keyboardHandlerC
 global mouseHandler
 extern mouseHandlerC
+global systemCallHandler
+extern terminalSysCallHandler
 global spuriousInt7Handler
 global spuriousInt15Handler
 extern inputB
 extern outputB
+extern ncPrintHex
 
 %include "./asm/macros.m"
 
@@ -30,6 +33,20 @@ mouseHandler:
   out 0x20, al ;ACK al slave pic
   popaq
   sti
+  iretq
+
+systemCallHandler:
+  pushaq
+  sti
+  mov r9, rdi
+  mov r8, rsi
+  mov r10, rdx
+  mov rdx, rcx
+  mov rcx, r10
+  mov rdi, rax
+  mov rsi, rbx
+  call terminalSysCallHandler ; terminalSysCallHandler(rax,rbx,rcx,rdx,rsi,rdi)
+  popaq
   iretq
 
 spuriousInt7Handler:

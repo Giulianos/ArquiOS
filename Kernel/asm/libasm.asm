@@ -1,5 +1,6 @@
 global cpuVendor
 global sti
+global cli
 
 section .text
 
@@ -29,4 +30,8 @@ cpuVendor:
 
 sti:
 	sti
+	ret
+
+cli:
+	cli
 	ret
