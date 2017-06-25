@@ -9,7 +9,9 @@ typedef struct
   uint32_t size;
 } module_t;
 
-static void loadModulesToKernel();
-static void loadModuleToRun(uint8_t id);
+void loadModulesToKernel();
+void loadModuleToRun(uint8_t id);
+uint8_t getModulesQuantity();
+module_t * getModules();
 
 #endif
