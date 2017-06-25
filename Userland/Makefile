@@ -1,12 +1,15 @@
 include Makefile.inc
 
-all: sampleCodeModule shellModule helpModule
+all: sampleCodeModule shellModule helpModule fortuneModule
 
 shellModule:
 		cd shellModule; make
 
 helpModule:
 		cd helpModule; make
+
+fortuneModule:
+		cd fortuneModule; make
 
 sampleCodeModule:
 	cd SampleCodeModule; make
@@ -18,4 +21,4 @@ clean:
 	rm -rf *.bin
 
 
-.PHONY: shellModule sampleCodeModule helpModule all clean
+.PHONY: shellModule sampleCodeModule helpModule all clean fortuneModule
