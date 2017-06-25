@@ -20,7 +20,7 @@ tomando informacion de:
 static int mousePositionX = 500; //centrado en la pantalla
 static int mousePositionY = 175;
 
-static uint8_t didOccurFirsrInterrupt = 1;
+static uint8_t didOccurFirsrInterrupt = 0;
 
 static void mouseWait(uint8_t bit);
 static uint8_t mouseRead();
@@ -28,8 +28,17 @@ static void mouseWrite(uint8_t data);
 
 //Comandos del mouse: http://wiki.osdev.org/Mouse_Input#Useful_Mouse_Command_Set
 
+static uint8_t isMouseInterrupt()
+{
+  return inputB(0x64)&0x20;
+}
+
 void mouseDriver()
 {
+  //uint8_t statusReg  = inputB(0x64);
+
+  //if(!statusReg&0x20 || !statusReg&0x01)
+    //return;
 
   if(!didOccurFirsrInterrupt)
   {
@@ -79,7 +88,7 @@ void mouseDriver()
             mouseInfo.leftPressed = (flags&0x01)?1:0;
             terminalMouseUpdate(mouseInfo);
 
-            /*ncClear();
+            /*//ncClear();
             videoPrint(" ", (uint8_t)(24-(mousePositionY*24)/349), (uint8_t)((mousePositionX*79)/999), LIGHT_BLUE_BG);
             */
             break;
@@ -88,8 +97,8 @@ void mouseDriver()
 
 void initMouse()
 {
-  ncPrint("Initializing MouseDriver!");
-  ncNewline();
+  //ncPrint("Initializing MouseDriver!");
+  //ncNewline();
   //Habilito aux mouse dev. (opcional, pero mejor tenerlo)
   mouseWait(MOUSE_WAIT_WRITE); //Espero a poder escribir
   outputB(0x64, 0xA8);
@@ -116,10 +125,10 @@ void initMouse()
   mouseWrite(0xF2);
   mouseRead(); //Espero el ACK
   uint8_t mouseID= mouseRead(); //Leo el mouseID
-  ncPrintHex(mouseID);
+  //ncPrintHex(mouseID);
 
-  ncPrint("End of Initialization!");
-  ncNewline();
+  //ncPrint("End of Initialization!");
+  //ncNewline();
 
 }
 

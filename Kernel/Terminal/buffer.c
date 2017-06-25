@@ -38,14 +38,14 @@ uint8_t getChar()
   return buffer[f-1];
 }
 
-uint8_t emptyBuffer()
+uint8_t bufferIsEmpty()
 {
   return ((f == l)||(f == MAX && l == 0))?1:0;
 }
 
 void eraseFromBuffer()
 {
-  if(emptyBuffer())
+  if(bufferIsEmpty())
     return;
   l = (l==0)?MAX:(l-1);
 }

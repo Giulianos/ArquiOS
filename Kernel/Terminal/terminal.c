@@ -3,7 +3,9 @@
 #include "../KeyboardDriver/driver.h"
 #include "../MouseDriver/driver.h"
 #include "../VideoDriver/driver.h"
+#include "../ModulesManager/modules.h"
 #include "keyMapping.h"
+#include "buffer.h"
 
 #define SCREEN_WIDTH 80
 #define SCREEN_HEIGHT 25
@@ -11,10 +13,16 @@
 #define L_PRESSING 1
 #define MOVING 2
 #define DRAGGING 3 //apretar y mover
+#define PASTE 4
 
 #define DEFAULT_TEXT_ATTR BLACK_BG | WHITE_FG
 #define SELECTED_TEXT_ATTR WHITE_FG | LIGHT_BLUE_BG
 #define CURSOR_ATTR LIGHT_GREEN_BG | LIGHT_GREEN_FG
+
+#define SYSCALL_READ 0x03
+#define SYSCALL_WRITE 0x04
+#define SYSCALL_EXECVE 0x0B
+#define SYSCALL_EXIT 0x01
 
 static uint8_t screenText[SCREEN_HEIGHT][SCREEN_WIDTH];
 static uint8_t selectedText[SCREEN_HEIGHT][SCREEN_WIDTH];
@@ -24,6 +32,88 @@ static uint8_t pressingStartsX;
 static uint8_t pressingStartsY;
 static uint8_t pressingEndsX;
 static uint8_t pressingEndsY;
+static uint8_t enterPressed = 0;
+static uint8_t readChars = 0;
+
+//TEXT
+
+static uint8_t currentScreenRow = 0;
+static uint8_t currentScreenCol = 0;
+static uint8_t lastCopied[SCREEN_HEIGHT*SCREEN_WIDTH];
+//TEXT
+
+void scrolling()
+{
+  uint8_t i;
+  uint8_t j;
+  for(i=0; i<SCREEN_HEIGHT-1; i++)
+  {
+    for(j=0; j<SCREEN_WIDTH; j++)
+    {
+      screenText[i][j] = screenText[i+1][j];
+    }
+  }
+  for(j=0; j<SCREEN_WIDTH; j++)
+    screenText[i][j] = ' ';
+  currentScreenRow = SCREEN_HEIGHT-1;
+  currentScreenCol = 0;
+}
+
+void terminalPutChar(uint8_t ascii)
+{
+  if(currentScreenRow == SCREEN_HEIGHT)
+  {
+    scrolling();
+  }
+  if(ascii == '\n') //enter
+  {
+    currentScreenRow++;
+    currentScreenCol = 0;
+    return;
+  }
+  screenText[currentScreenRow][currentScreenCol++] = ascii;
+  if(currentScreenCol == SCREEN_WIDTH)
+  {
+    currentScreenCol = 0;
+    currentScreenRow++;
+  }
+}
+
+void terminalEraseChar()
+{
+  if(currentScreenRow == 0)
+  {
+    if(currentScreenCol == 0)
+      return;
+    currentScreenCol--;
+  }
+  else if(currentScreenCol == 0)
+  {
+    currentScreenRow--;
+    currentScreenCol=SCREEN_WIDTH-1;
+  } else
+  {
+    currentScreenCol--;
+  }
+  screenText[currentScreenRow][currentScreenCol] = ' ';
+  return;
+}
+
+//VIDEO
+
+void updateScreen()
+{
+  uint8_t i, j, attr;
+  for(i=0; i<SCREEN_HEIGHT; i++)
+  {
+    for(j=0; j<SCREEN_WIDTH; j++)
+    {
+        attr=(selectedText[i][j]==1)?SELECTED_TEXT_ATTR:DEFAULT_TEXT_ATTR;
+        videoPutChar(screenText[i][j], i, j, attr);
+    }
+  }
+  videoPutChar(screenText[cursorY][cursorX], cursorY, cursorX, CURSOR_ATTR);
+}
 
 //KEYBOARD
 void terminalKeyboardUpdate(keycode_t key)
@@ -33,13 +123,87 @@ void terminalKeyboardUpdate(keycode_t key)
   if(!(updateState(key, &state))&& key.action == KBD_ACTION_PRESSED)
   {
     uint8_t ascii = getAscii(key, state);
-    ncPrintChar(ascii);
+    if(ascii == 8)//backspace
+    {
+      if(bufferIsEmpty())
+        return;
+      terminalEraseChar(); //borro el char de la pantalla
+      eraseFromBuffer(); //borro el char de la pantalla
+      updateScreen();
+    }
+    else if(ascii == '\n')
+    {
+      enterPressed=1;
+      terminalPutChar(ascii);
+      updateScreen(); //actualizo la pantalla
+    }
+    else
+    {
+      readChars++;
+      terminalPutChar(ascii); //muestro el char en pantalla
+      putChar(ascii); //agrego el char al buffer
+      updateScreen(); //actualizo la pantalla
+    }
   }
 }
 
 
+//SYSCALLS
 
+//Devuelve la cantidad de chars leidos
+uint64_t readFromBuffer(uint8_t *target, uint64_t size)
+{
+  uint64_t i = 0;
+  while(!enterPressed && readChars<size){/*Espero*/}
+  enterPressed=0;
+  readChars=0;
+  while(!bufferIsEmpty())
+  {
+    *(target+i) = getChar();
+    i++;
+  }
+  target[i]=0;
+  return i;
+}
 
+void writeToScreen(uint8_t *target, uint64_t size)
+{
+  uint64_t i=0;
+  while(i<size)
+  {
+    terminalPutChar(*(target++));
+    i++;
+  }
+  updateScreen();
+}
+
+void run(uint64_t moduleNumber)
+{
+    if(moduleNumber>=getModulesQuantity())
+    {
+      writeToScreen("Error! Ese modulo no existe\n", 28);
+    }
+    else
+    {
+      loadModuleToRun(moduleNumber);
+      runLoadedModule();
+    }
+    loadModuleToRun(0); //Go back to shell
+  	runLoadedModule();
+}
+
+uint64_t terminalSysCallHandler(uint64_t rax,uint64_t rbx,uint64_t rcx,uint64_t rdx,uint64_t rsi,uint64_t rdi)
+{
+  switch(rax)
+  {
+    case SYSCALL_READ: readFromBuffer((uint8_t*)rcx, rdx); break; //Esta funcion lee del buffer de teclado
+    case SYSCALL_WRITE:  writeToScreen((uint8_t*)rcx, rdx); break; //Esta funcion escribe en pantalla
+    case SYSCALL_EXECVE: run(rbx); break; //Recibe el numero de modulo, lo copia en memoria y lo ejecuta
+    case SYSCALL_EXIT: run(0x00); break;//Hace lo mismo que execve con 00 (numero del modulo de la shell)
+    default: return;//imprimo "Undefined syscall"
+  }
+
+}
 
 //MOUSE
 void selectText(uint8_t initialX, uint8_t initialY, uint8_t finalX, uint8_t finalY)
@@ -66,32 +230,39 @@ void deselectText()
 {
   uint8_t x;
   uint8_t y;
-  for(x=0; x<=SCREEN_WIDTH; x++)
+  for(x=0; x<SCREEN_WIDTH; x++)
   {
-    for(y=0; y<=SCREEN_HEIGHT; y++)
+    for(y=0; y<SCREEN_HEIGHT; y++)
     {
       selectedText[y][x]=0;
     }
   }
 }
 
-void updateScreen()
+
+void copy()
 {
-  uint8_t i, j, attr;
+  uint8_t i, j, k=0;
   for(i=0; i<SCREEN_HEIGHT; i++)
   {
     for(j=0; j<SCREEN_WIDTH; j++)
     {
-        attr=(selectedText[i][j]==1)?SELECTED_TEXT_ATTR:DEFAULT_TEXT_ATTR;
-        videoPutChar(screenText[i][j], i, j, attr);
+      if(selectedText[i][j] == 1)
+        lastCopied[k++] = screenText[i][j];
     }
   }
-  videoPutChar(screenText[cursorY][cursorX], cursorY, cursorX, CURSOR_ATTR);
+  lastCopied[k++]=0;
 }
 
-void copy()
+//lastCopied tiene asciis
+void paste()
 {
-
+  uint8_t i=0;
+  while(lastCopied[i] != 0)
+  {
+    terminalPutChar(lastCopied[i++]);
+  }
+  updateScreen();
 }
 
 void terminalMouseUpdate(mouseInfo_t mouse)
@@ -99,12 +270,13 @@ void terminalMouseUpdate(mouseInfo_t mouse)
   //paso los valores de posX y posY al rango de la terminal.
   mouse.posX = (uint8_t)((mouse.posX*79)/999);
   mouse.posY = (uint8_t)(24-(mouse.posY*24)/349);
-  ncClear();
-  ncPrintDec(mouse.posX);
-  ncNewline();
-  ncPrintDec(mouse.posY);
   static uint8_t state = QUIET;
   switch (state) {
+    case PASTE: if(!mouse.rightPressed)
+                {
+                  state = QUIET;
+                  break;
+                }
     case QUIET: if(mouse.leftPressed && (cursorX != mouse.posX || cursorY != mouse.posY))
                 { //paso a DRAGGING, debo seleccionar
                   pressingStartsX = cursorX;
@@ -128,6 +300,12 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                   pressingStartsY = cursorY;
                   selectText(cursorX, cursorY, cursorX, cursorY);
                   state = L_PRESSING;
+                  break;
+                }
+                if(mouse.rightPressed)
+                { //paso a PASTE
+                  paste();
+                  state = PASTE;
                   break;
                 }
                 else //sigo en QUIET
@@ -160,6 +338,12 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                         state = DRAGGING;
                         break;
                       }
+                      if(mouse.rightPressed)
+                      { //paso a PASTE
+                        paste();
+                        state = PASTE;
+                        break;
+                      }
                       else //sigo en L_PRESSING
                         break;
 
@@ -184,6 +368,12 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                   cursorX = mouse.posX;
                   cursorY = mouse.posY;
                   state = DRAGGING;
+                  break;
+                }
+                if(mouse.rightPressed)
+                { //paso a PASTE
+                  paste();
+                  state = PASTE;
                   break;
                 }
                 else
@@ -217,6 +407,12 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                     { //paso a L_PRESSING, selecciono posicion actual
                       selectText(cursorX, cursorY, cursorX, cursorY);
                       state = L_PRESSING;
+                      break;
+                    }
+                    if(mouse.rightPressed)
+                    { //paso a PASTE
+                      paste();
+                      state = PASTE;
                       break;
                     }
                     else

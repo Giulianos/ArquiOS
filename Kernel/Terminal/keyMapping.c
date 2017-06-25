@@ -4,8 +4,8 @@ uint8_t getAscii(keycode_t key, uint8_t state)
   if(((state & SHIFT_PRESSED) || (state & RIGHT_SHIFT_PRESSED)) && (state & CAPS_LOCK_ENABLED))
   switch (key.code)
   {
-    //case 1D://back
-    //case 3E://enter
+    case 0x1D: return 0x08;//back
+    case 0x3E: return '\n';//enter
     case 0x11: return '!';
     case 0x12: return '@';
     case 0x13: return '#';
@@ -57,8 +57,8 @@ uint8_t getAscii(keycode_t key, uint8_t state)
   {
     switch (key.code)
     {
-      //case 1D://back
-      //case 3E://enter
+      case 0x1D: return 0x08;//back
+      case 0x3E: return '\n';//enter
       case 0x11: return '!';
       case 0x12: return '@';
       case 0x13: return '#';
@@ -112,8 +112,8 @@ uint8_t getAscii(keycode_t key, uint8_t state)
   {
     switch (key.code)
     {
-      //case 1D://back
-      //case 3E://enter
+      case 0x1D: return 0x08;//back
+      case 0x3E: return '\n';//enter
       case 0x11: return '1';
       case 0x12: return '2';
       case 0x13: return '3';
@@ -166,8 +166,8 @@ uint8_t getAscii(keycode_t key, uint8_t state)
   {
     switch (key.code)
     {
-      //case 1D://back
-      //case 3E://enter
+      case 0x1D: return 0x08;//back
+      case 0x3E: return '\n';//enter
       case 0x11: return '1';
       case 0x12: return '2';
       case 0x13: return '3';
