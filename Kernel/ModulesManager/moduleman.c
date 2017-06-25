@@ -87,6 +87,11 @@ void loadModuleToRun(uint8_t id)
   memcpy(runtimePage, modules[id].dir, modules[id].size);
 }
 
+void runLoadedModule()
+{
+  ((EntryPoint)runtimePage)();
+}
+
 static uint32_t readUint32(uint8_t ** address)
 {
 	uint32_t result = *(uint32_t*)(*address);
