@@ -1,5 +1,5 @@
 #include <stdint.h>
-
+/*
 uint64_t * PDAddr = (uint64_t *)0x10000;
 
 void mapUserspace(uint8_t * physicalAddr)
@@ -10,3 +10,4 @@ void mapUserspace(uint8_t * physicalAddr)
   aux = PDAddr[6] & 0xFFF0000000000FFF;
   PDAddr[6] = aux & ((uint64_t)physicalAddr&0xFFFFFFFFFF000);
 }
+*/

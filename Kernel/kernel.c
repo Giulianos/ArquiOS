@@ -5,6 +5,7 @@
 #include <naiveConsole.h>
 #include <interrupts.h>
 #include "PagingManager/paging.h"
+#include "ModulesManager/modules.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -39,11 +40,7 @@ void * getStackBase()
 
 void * initializeKernelBinary()
 {
-	void * moduleAddresses[] = {
-		sampleCodeModuleAddress,
-		sampleDataModuleAddress
-	};
-	loadModules(&endOfKernelBinary, moduleAddresses);
+	loadModulesToKernel();
 	clearBSS(&bss, &endOfKernel - &bss);
 	return getStackBase();
 }
@@ -51,7 +48,7 @@ void * initializeKernelBinary()
 int main()
 {
 	ncClear();
-	mapUserspace(0x1000000);
+	//mapUserspace(0x1000000);
 	configureInterrupts();
 
 	((EntryPoint)sampleCodeModuleAddress)();

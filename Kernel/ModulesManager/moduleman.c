@@ -1,3 +1,6 @@
+#include <lib.h>
+#include "modules.h"
+
 static module_t modules[256];
 
 extern uint8_t endOfKernelBinary;
@@ -17,9 +20,10 @@ extern uint8_t endOfKernel;
 */
 
 static uint8_t * expandedModulesArea = (uint8_t *)0xA00000; //10MB
+static uint8_t * runtimePage = (uint8_t *)0x1400000;
 
 /* Loads modules  */
-static void loadModulesToKernel(module_t * modules, uint8_t quantity)
+static void loadModulesToKernel()
 {
   //Read how many modules were packed
   uint32_t modulesQuantity = *((uint32_t *)(&endOfKernelBinary));
@@ -37,6 +41,7 @@ static void loadModuleToKernel(uint8_t ** module, uint8_t ** targetModuleAddress
 	uint32_t moduleSize = readUint32(module);
   modules[moduleNum].id = moduleNum;
   modules[moduleNum].dir = *targetModuleAddress;
+  modules[moduleNum].size = moduleSize;
 	memcpy(targetModuleAddress, *module, moduleSize);
 	*module += moduleSize;
   *targetModuleAddress += moduleSize;
@@ -44,7 +49,7 @@ static void loadModuleToKernel(uint8_t ** module, uint8_t ** targetModuleAddress
 
 static void loadModuleToRun(uint8_t id)
 {
-
+  memcpy(runtimePage, modules[id].dir, modules[id].size);
 }
 
 static uint32_t readUint32(uint8_t ** address)
