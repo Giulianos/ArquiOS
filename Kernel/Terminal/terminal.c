@@ -261,6 +261,7 @@ void paste()
   while(lastCopied[i] != 0)
   {
     terminalPutChar(lastCopied[i++]);
+    putChar(lastCopied[i++]); //agrego el char al buffer
   }
   updateScreen();
 }
