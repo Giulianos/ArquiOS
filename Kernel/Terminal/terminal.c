@@ -260,7 +260,7 @@ void paste()
   uint8_t i=0;
   while(lastCopied[i] != 0)
   {
-    terminalPutChar(lastCopied[i++]);
+    terminalPutChar(lastCopied[i]);
     putChar(lastCopied[i++]); //agrego el char al buffer
   }
   updateScreen();
@@ -333,7 +333,8 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                       }
                       else if(cursorX != mouse.posX || cursorY != mouse.posY)
                       { // paso a DRAGGING, selecciono y actualizo cursor
-                        selectText(cursorX ,cursorY, mouse.posX, mouse.posY);
+                        deselectText();
+                        selectText(pressingStartsX ,pressingStartsY, mouse.posX, mouse.posY);
                         cursorX = mouse.posX;
                         cursorY = mouse.posY;
                         state = DRAGGING;
@@ -418,7 +419,8 @@ void terminalMouseUpdate(mouseInfo_t mouse)
                     }
                     else
                     { // sigo en DRAGGING, selecciono y actualizo cursor
-                      selectText(cursorX, cursorY, mouse.posX, mouse.posY);
+                      deselectText();
+                      selectText(pressingStartsX ,pressingStartsY, mouse.posX, mouse.posY);
                       cursorX = mouse.posX;
                       cursorY = mouse.posY;
                       break;

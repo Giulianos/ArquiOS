@@ -67,8 +67,8 @@ void mouseDriver()
             if(flags&0x20)
               movY |= 0xFFFFFF00;
             //videoPrint(" ", (uint8_t)(24-(mousePositionY*24)/349), (uint8_t)((mousePositionX*79)/999), BLACK_BG);
-            mousePositionX+=movX;
-            mousePositionY+=movY;
+            mousePositionX+=movX/4;
+            mousePositionY+=movY/4;
             //los limites de la posicion en x son 0,999
             //1000 posiciones que luego mapeo a 80
             if(mousePositionX>=1000)
