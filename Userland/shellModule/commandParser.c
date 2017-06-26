@@ -5,7 +5,8 @@ static command_t commands[] =
 {
 	{"help", 4, 1},
 	{"sample", 6, 2},
-	{"fortune", 7, 3}
+	{"fortune", 7, 3},
+	{"clear", 5, 4}
 };
 
 uint8_t parseCommand(char * cmd)
