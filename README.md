@@ -4,9 +4,9 @@ Pure64 based 64bit OS with the following features:
 - Mouse Driver
 - Video Driver
 - Keyboard Driver
-- Modules loading
+- Module loader (Module = User program)
 - Paging
 
 ## Screenshot of the OS
-Output of help command is beign shown. Mouse text selection allows copy and paste.
+Output of the help command is being shown. Mouse text selection allows copy and paste.
 ![Screenshot of the OS](https://github.com/Giulianos/ArquiOS/blob/master/screenshot.png?raw=true)
