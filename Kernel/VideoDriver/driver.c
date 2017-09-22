@@ -19,3 +19,13 @@ uint8_t videoPutChar(char c, uint8_t row, uint8_t col, uint8_t attr){
   *(position++) = attr;
   return (position<(uint8_t*)(screenBuffer+screenSize*2));
 }
+
+void setVideoBuffer(uint8_t * vbuffer)
+{
+  uint8_t * position = screenBuffer;
+  uint8_t * lastPosition = (uint8_t *)(screenBuffer + 2*screenSize);
+
+  for(;position<=lastPosition; position++) {
+    *position = *(vbuffer++);
+  }
+}
