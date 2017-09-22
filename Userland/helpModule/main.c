@@ -8,9 +8,10 @@ extern void putc ( void* p, char c);
 
 int main() {
 	init_printf(0, putc);
-	printf("Help:");
-	printf("\nhelp   -    Muestra los comandos disponibles");
-	printf("\nhelp   -    Muestra los comandos disponibles");
-	printf("\n");
+	printf("Los comandos disponibles son: ");
+	printf("\nhelp    Muestra los comandos disponibles");
+	printf("\nfortune  Ejecuta el programa fortune");
+	printf("\nsample  Muestra informacion de paginacion");
+	printf("\nclear  Limpia la pantalla\n");
 	return 0xDEADBEEF;
 }

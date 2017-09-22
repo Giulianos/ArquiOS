@@ -1,5 +1,5 @@
 #include "keyMapping.h"
-uint8_t getAsciiUS(keycode_t key, uint8_t state)
+uint8_t getAsciiLA(keycode_t key, uint8_t state)
 {
   if(((state & SHIFT_PRESSED) || (state & RIGHT_SHIFT_PRESSED)) && (state & CAPS_LOCK_ENABLED))
   switch (key.code)
@@ -7,15 +7,15 @@ uint8_t getAsciiUS(keycode_t key, uint8_t state)
     case 0x1D: return 0x08;//back
     case 0x3E: return '\n';//enter
     case 0x11: return '!';
-    case 0x12: return '@';
+    case 0x12: return '"';
     case 0x13: return '#';
     case 0x14: return '$';
     case 0x15: return '%';
-    case 0x16: return '^';
-    case 0x17: return '&';
-    case 0x18: return '*';
-    case 0x19: return '('; //1
-    case 0x1A: return ')';//0
+    case 0x16: return '&';
+    case 0x17: return '/';
+    case 0x18: return '(';
+    case 0x19: return ')'; //1
+    case 0x1A: return '=';//0
 
     case 0x22: return 'q';
     case 0x23: return 'w';
@@ -46,9 +46,9 @@ uint8_t getAsciiUS(keycode_t key, uint8_t state)
     case 0x44: return 'b';
     case 0x45: return 'n';
     case 0x46: return 'm';
-    case 0x47: return '<';
-    case 0x48: return '>';
-    case 0x49: return '?';
+    case 0x47: return ';';
+    case 0x48: return ':';
+    case 0x49: return '_';
 
     case 0x4F: return ' ';
 
@@ -58,18 +58,16 @@ uint8_t getAsciiUS(keycode_t key, uint8_t state)
     switch (key.code)
     {
       case 0x1D: return 0x08;//back
-      case 0x3E: return '\n';//enter
       case 0x11: return '!';
-      case 0x12: return '@';
+      case 0x12: return '"';
       case 0x13: return '#';
       case 0x14: return '$';
       case 0x15: return '%';
-      case 0x16: return '^';
-      case 0x17: return '&';
-      case 0x18: return '*';
-      case 0x19: return '('; //1
-      case 0x1A: return ')';//0
-      case 0x1B: return '_';//0
+      case 0x16: return '&';
+      case 0x17: return '/';
+      case 0x18: return '(';
+      case 0x19: return ')'; //1
+      case 0x1A: return '=';//0
 
       case 0x22: return 'Q';
       case 0x23: return 'W';
@@ -100,9 +98,9 @@ uint8_t getAsciiUS(keycode_t key, uint8_t state)
       case 0x44: return 'B';
       case 0x45: return 'N';
       case 0x46: return 'M';
-      case 0x47: return '<';
-      case 0x48: return '>';
-      case 0x49: return '?';
+      case 0x47: return ';';
+      case 0x48: return ':';
+      case 0x49: return '_';
 
       case 0x4F: return ' ';
 
@@ -156,7 +154,7 @@ uint8_t getAsciiUS(keycode_t key, uint8_t state)
       case 0x46: return 'M';
       case 0x47: return ',';
       case 0x48: return '.';
-      case 0x49: return '/';
+      case 0x49: return '-';
 
       case 0x4F: return ' ';
 
@@ -210,7 +208,7 @@ uint8_t getAsciiUS(keycode_t key, uint8_t state)
       case 0x46: return 'm';
       case 0x47: return ',';
       case 0x48: return '.';
-      case 0x49: return '/';
+      case 0x49: return '-';
 
       case 0x4F: return ' ';
 
@@ -220,7 +218,7 @@ uint8_t getAsciiUS(keycode_t key, uint8_t state)
 }
 
 //returns either key is Modifier or not
-uint8_t updateStateUS(keycode_t key, uint8_t *state)
+uint8_t updateStateLA(keycode_t key, uint8_t *state)
 {
   //shift
   if(key.code == 0x3F)
