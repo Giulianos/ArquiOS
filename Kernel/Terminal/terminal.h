@@ -17,5 +17,6 @@
   void paste();
   void terminalMouseUpdate(mouseInfo_t mouse);
   void terminalKeyboardUpdate(keycode_t key);
+  void terminalInit();
 
 #endif

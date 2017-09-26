@@ -12,6 +12,7 @@ int main() {
 	printf("\nhelp    Muestra los comandos disponibles");
 	printf("\nfortune  Ejecuta el programa fortune");
 	printf("\nsample  Muestra informacion de paginacion");
+	printf("\nsnake  Jugar al snake!\n");
 	printf("\nclear  Limpia la pantalla\n");
 	return 0xDEADBEEF;
 }

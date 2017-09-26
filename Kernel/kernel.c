@@ -4,6 +4,7 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include <interrupts.h>
+#include "Terminal/terminal.h"
 #include "PagingManager/paging.h"
 #include "ModulesManager/modules.h"
 
@@ -43,6 +44,7 @@ int main()
 {
 	//mapUserspace(0x1000000);
 	configureInterrupts();
+	terminalInit();
 
 	//Run shell
 	loadModuleToRun(0);

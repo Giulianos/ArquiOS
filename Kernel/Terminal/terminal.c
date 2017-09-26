@@ -24,6 +24,9 @@
 #define SYSCALL_EXECVE 0x0B
 #define SYSCALL_EXIT 0x01
 #define SYSCALL_CLEAR 0x44
+#define SYSCALL_TOGGLEVIDEO 0x45
+#define SYSCALL_VIDEODRAW 0x046
+#define SYSCALL_GETKEYSTATE 0x47
 
 static uint8_t screenText[SCREEN_HEIGHT][SCREEN_WIDTH];
 static uint8_t selectedText[SCREEN_HEIGHT][SCREEN_WIDTH];
@@ -36,12 +39,27 @@ static uint8_t pressingEndsY;
 static uint8_t enterPressed = 0;
 static uint8_t readChars = 0;
 
-//TEXT
+static uint8_t videoModeEnabled = 0;
+
+static uint8_t keyboardState[1024];
 
 static uint8_t currentScreenRow = 0;
 static uint8_t currentScreenCol = 0;
 static uint8_t lastCopied[SCREEN_HEIGHT*SCREEN_WIDTH];
+
+
 //TEXT
+
+void terminalInit()
+{
+  //Initialize keyboardState
+  uint16_t i;
+
+  for(i=0; i<256; i++)
+  {
+    keyboardState[i]=0;
+  }
+}
 
 void scrolling()
 {
@@ -78,6 +96,14 @@ void terminalPutChar(uint8_t ascii)
     currentScreenCol = 0;
     currentScreenRow++;
   }
+}
+
+void videoDraw(uint8_t * vbuffer)
+{
+  //To do: write to screen
+  //clearScreen();
+  setVideoBuffer(vbuffer);
+  return;
 }
 
 void terminalEraseChar()
@@ -132,6 +158,12 @@ void clearScreen() {
 //KEYBOARD
 void terminalKeyboardUpdate(keycode_t key)
 {
+
+  keyboardState[key.code] = key.action==KBD_ACTION_PRESSED?1:0;
+
+	if(videoModeEnabled)
+		return;
+
   static uint8_t state = 0;
 
   if(!(updateState(key, &state))&& key.action == KBD_ACTION_PRESSED)
@@ -161,7 +193,6 @@ void terminalKeyboardUpdate(keycode_t key)
   }
 }
 
-
 //SYSCALLS
 
 //Devuelve la cantidad de chars leidos
@@ -178,6 +209,11 @@ uint64_t readFromBuffer(uint8_t *target, uint64_t size)
   }
   target[i]=0;
   return i;
+}
+
+uint64_t getKeyState(uint8_t keycode)
+{
+    return keyboardState[keycode];
 }
 
 void writeToScreen(uint8_t *target, uint64_t size)
@@ -206,17 +242,43 @@ void run(uint64_t moduleNumber)
   	runLoadedModule();
 }
 
+uint8_t toggleVideoMode()
+{
+  return videoModeEnabled=videoModeEnabled?0:1;
+}
+
 uint64_t terminalSysCallHandler(uint64_t rax,uint64_t rbx,uint64_t rcx,uint64_t rdx,uint64_t rsi,uint64_t rdi)
 {
   switch(rax)
   {
-    case SYSCALL_READ: readFromBuffer((uint8_t*)rcx, rdx); break; //Esta funcion lee del buffer de teclado
-    case SYSCALL_WRITE:  writeToScreen((uint8_t*)rcx, rdx); break; //Esta funcion escribe en pantalla
-    case SYSCALL_EXECVE: run(rbx); break; //Recibe el numero de modulo, lo copia en memoria y lo ejecuta
-    case SYSCALL_EXIT: run(0x00); break;//Hace lo mismo que execve con 00 (numero del modulo de la shell)
-    case SYSCALL_CLEAR: clearScreen(); break;
-    default: return;//imprimo "Undefined syscall"
+    case SYSCALL_READ:
+      readFromBuffer((uint8_t*)rcx, rdx);
+      break;
+    case SYSCALL_WRITE:
+      writeToScreen((uint8_t*)rcx, rdx);
+      break;
+    case SYSCALL_EXECVE:
+      run(rbx);
+      break; //Recibe el numero de modulo, lo copia en memoria y lo ejecuta
+    case SYSCALL_EXIT:
+      run(0x00);
+      break;
+    case SYSCALL_TOGGLEVIDEO:
+      toggleVideoMode();
+      break;
+    case SYSCALL_CLEAR:
+      clearScreen();
+      break;
+    case SYSCALL_VIDEODRAW:
+      videoDraw((uint8_t*)rcx);
+      break;
+    case SYSCALL_GETKEYSTATE:
+      *((uint8_t *)rbx) = getKeyState(rcx);
+       break;
+    default:
+      return 0;//imprimo "Undefined syscall"
   }
+  return 0;
 
 }
 
@@ -283,6 +345,11 @@ void paste()
 
 void terminalMouseUpdate(mouseInfo_t mouse)
 {
+  if(videoModeEnabled)
+  {
+    //Actually we do nothing
+    return;
+  }
   //paso los valores de posX y posY al rango de la terminal.
   mouse.posX = (uint8_t)((mouse.posX*79)/999);
   mouse.posY = (uint8_t)(24-(mouse.posY*24)/349);

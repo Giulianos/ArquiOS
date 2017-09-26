@@ -3,7 +3,7 @@
 #include "../Terminal/terminal.h"
 #include "driver.h"
 
-static uint8_t didOccurFirstInterrupt = 1;
+static uint8_t didOccurFirstInterrupt = 0;
 
 void keyboardDriver()
 {

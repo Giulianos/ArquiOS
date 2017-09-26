@@ -20,7 +20,7 @@ tomando informacion de:
 static int mousePositionX = 500; //centrado en la pantalla
 static int mousePositionY = 175;
 
-static uint8_t didOccurFirsrInterrupt = 1;
+static uint8_t didOccurFirsrInterrupt = 0;
 
 static void mouseWait(uint8_t bit);
 static uint8_t mouseRead();
@@ -67,8 +67,8 @@ void mouseDriver()
             if(flags&0x20)
               movY |= 0xFFFFFF00;
             //videoPrint(" ", (uint8_t)(24-(mousePositionY*24)/349), (uint8_t)((mousePositionX*79)/999), BLACK_BG);
-            mousePositionX+=movX/4;
-            mousePositionY+=movY/4;
+            mousePositionX+=movX;
+            mousePositionY+=movY;
             //los limites de la posicion en x son 0,999
             //1000 posiciones que luego mapeo a 80
             if(mousePositionX>=1000)
