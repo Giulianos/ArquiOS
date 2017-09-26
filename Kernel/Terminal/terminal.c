@@ -159,12 +159,10 @@ void clearScreen() {
 void terminalKeyboardUpdate(keycode_t key)
 {
 
-  if(videoModeEnabled)
-  {
-    //Here we should update keyboard structure state (TODO)
-    keyboardState[key.code] = key.action==KBD_ACTION_PRESSED?1:0;
-    return;
-  }
+  keyboardState[key.code] = key.action==KBD_ACTION_PRESSED?1:0;
+
+	if(videoModeEnabled)
+		return;
 
   static uint8_t state = 0;
 
